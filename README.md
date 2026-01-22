@@ -1,142 +1,142 @@
-# Particles-Vortex / Luminous Resonance
+# Particles-Vortex / 流光回响
 
-An interactive particle system featuring organic flow dynamics, vortex attraction, and luminous trail effects. Thousands of autonomous particles respond to your cursor movements through carefully tuned physics and Perlin noise fields.
+一个交互式粒子系统，展现有机流动动力学、涡旋吸引力和发光拖尾效果。数千个自主粒子通过精细调校的物理场和柏林噪声响应你的光标移动。
 
-![Luminous Resonance](https://img.shields.io/badge/Interactive-Generative_Art-cyan?style=for-the-badge)
+![Luminous Resonance](https://img.shields.io/badge/交互式-生成艺术-cyan?style=for-the-badge)
 ![p5.js](https://img.shields.io/badge/p5.js-1.7.0-orange?style=for-the-badge&logo=p5.js)
 
-## ✨ Features
+## ✨ 特性
 
-- **6,500+ Particles** - Autonomous entities with organic movement patterns
-- **Vortex Attraction** - Particles swirl around your cursor with configurable strength
-- **Perlin Noise Flow** - Natural, grass-like movement driven by multi-octave noise fields
-- **Luminous Trails** - Velocity-based brightness with controlled persistence
-- **Seed-Based Generation** - Reproducible results with seed control
-- **Image Color Mapping** - Map particle colors to any uploaded image
-- **Click Repulsion** - Create burst effects on mouse click
-- **Customizable Parameters** - Real-time control over all physics parameters
+- **6,500+ 粒子** - 具有有机运动模式的自主实体
+- **涡旋吸引** - 粒子围绕光标旋转，强度可调
+- **柏林噪声流动** - 由多重八度噪声场驱动的自然草状运动
+- **流光拖尾** - 基于速度的亮度与可控的持久度
+- **基于种子的生成** - 通过种子控制实现可重现的结果
+- **图像颜色映射** - 将粒子颜色映射到任何上传的图像
+- **点击排斥** - 鼠标点击时触发爆发效果
+- **可自定义参数** - 所有物理参数的实时控制
 
-## 🎮 How to Use
+## 🎮 使用方法
 
-### Basic Controls
-- **Move your cursor** - Creates vortex attraction, particles accelerate and swirl
-- **Click** - Triggers repulsion burst effect
-- **Adjust sliders** - Fine-tune all physics parameters in real-time
+### 基本操作
+- **移动光标** - 创建涡旋吸引，粒子加速并旋转
+- **点击鼠标** - 触发排斥爆发效果
+- **调节滑块** - 实时精细调校所有物理参数
 
-### Parameters
+### 参数说明
 
-| Parameter | Description | Range | Default |
+| 参数 | 描述 | 范围 | 默认值 |
 |-----------|-------------|-------|---------|
-| **Particle Count** | Number of particles in the system | 1,000 - 20,000 | 6,500 |
-| **Flow Speed** | Global velocity multiplier | 0.1 - 3.0 | 1.5 |
-| **Noise Scale** | Perlin noise frequency (lower = smoother) | 0.001 - 0.02 | 0.001 |
-| **Trail Persistence** | How long trails persist (higher = longer) | 0.5 - 2.0 | 0.9 |
-| **Vortex Strength** | Attraction force toward cursor | 0 - 3.0 | 0.3 |
-| **Vortex Range** | Radius of attraction effect | 50 - 800 | 600 |
-| **Click Repulsion** | Burst force on click | 0 - 10 | 5 |
-| **Particle Size** | Visual size multiplier | 0.5 - 3.0 | 2.5 |
+| **粒子数量** | 系统中的粒子数量 | 1,000 - 20,000 | 6,500 |
+| **流动速度** | 全局速度倍数 | 0.1 - 3.0 | 1.5 |
+| **噪声缩放** | 柏林噪声频率（越小越平滑）| 0.001 - 0.02 | 0.001 |
+| **拖尾持久度** | 拖尾持续时间（越长越明显）| 0.5 - 2.0 | 0.9 |
+| **涡旋强度** | 向光标的吸引力 | 0 - 3.0 | 0.3 |
+| **涡旋范围** | 吸引效应的半径 | 50 - 800 | 600 |
+| **点击排斥** | 点击时的爆发力 | 0 - 10 | 5 |
+| **粒子大小** | 视觉尺寸倍数 | 0.5 - 3.0 | 2.5 |
 
-### Seed Control
-- **Seed Value** - Determines initial particle positions and noise field
-- **← Prev / Next →** - Navigate through seeds sequentially
-- **↻ Random** - Generate random seed for new variations
+### 种子控制
+- **种子值** - 决定初始粒子位置和噪声场
+- **← 上一个 / 下一个 →** - 按顺序浏览种子
+- **↻ 随机** - 生成随机种子以获得新变体
 
-### Image Color Mapping
-1. Upload any image using the file input
-2. Check "Use Image Colors" to enable mapping
-3. Particles will sample colors from the image based on their position
+### 图像颜色映射
+1. 使用文件输入上传任意图像
+2. 勾选"使用图像颜色"启用映射
+3. 粒子将根据其位置从图像中采样颜色
 
-### Actions
-- **Reset** - Restore all parameters to defaults
-- **Download PNG** - Save current canvas as high-resolution image
+### 操作按钮
+- **重置** - 将所有参数恢复为默认值
+- **下载 PNG** - 将当前画布保存为高分辨率图像
 
-## 🚀 Quick Start
+## 🚀 快速开始
 
-Simply open `Luminous_Resonance.html` in any modern web browser. No build process or dependencies required.
+只需在任何现代网络浏览器中打开 `Luminous_Resonance.html`。无需构建过程或依赖项。
 
-The project uses p5.js loaded from CDN:
+项目通过 CDN 加载 p5.js：
 ```html
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
 ```
 
-## 🎨 Algorithm Overview
+## 🎨 算法概述
 
-### Physics System
-Particles move through a force field composed of:
-1. **Perlin Noise Flow** - Base directional force from 3D noise field
-2. **Radial Attraction** - Pulls particles toward cursor (inverse-distance falloff)
-3. **Tangential Rotation** - Creates spiraling vortex motion
-4. **Velocity Decay** - Gradual energy loss (0.5% per frame)
-5. **Boundary Wrapping** - Particles respawn at edges when they leave the canvas
+### 物理系统
+粒子通过由以下组成的力场运动：
+1. **柏林噪声流动** - 来自 3D 噪声场的基本方向力
+2. **径向吸引** - 将粒子拉向光标（反距离衰减）
+3. **切向旋转** - 创建螺旋涡旋运动
+4. **速度衰减** - 逐渐能量损失（每帧 0.5%）
+5. **边界环绕** - 粒子离开画布时在边缘重生
 
-### Visual Design
-- **Velocity-to-Brightness Mapping** - Faster particles appear brighter
-- **Multi-Layer Rendering** - Outer glow, inner core, and bright center
-- **Trail Persistence** - Controlled alpha fading creates flowing streams
-- **Color Palette** - Cyan (#00ffff), Teal (#00ced1), Aqua (#7fffd4)
+### 视觉设计
+- **速度-亮度映射** - 更快的粒子看起来更明亮
+- **多层渲染** - 外部光晕、内部核心和亮白中心
+- **拖尾持久度** - 受控的 alpha 淡出创造流动的流线
+- **调色板** - 青色 (#00ffff)、蓝绿色 (#00ced1)、水绿色 (#7fffd4)
 
-## 📊 Performance
+## 📊 性能
 
-- **Resolution**: 1920x1080 canvas
-- **Frame Rate**: 60 FPS target
-- **Particle Count**: 6,500 default (configurable up to 20,000)
-- **Optimizations**:
-  - Efficient spatial calculations
-  - Batched canvas operations
-  - Minimal object creation per frame
+- **分辨率**：1920x1080 画布
+- **帧率**：目标 60 FPS
+- **粒子数量**：默认 6,500（可配置高达 20,000）
+- **优化**：
+  - 高效的空间计算
+  - 批处理画布操作
+  - 每帧最小对象创建
 
-## 🎯 Technical Details
+## 🎯 技术细节
 
-### Canvas Rendering
-- Background clearing with variable alpha (prevents static patterns)
-- Dual-layer particle rendering (glow + core)
-- Additive brightness boost based on velocity
-- Minimum alpha constraint: 20 (ensures trails don't accumulate)
+### 画布渲染
+- 可变 alpha 的背景清除（防止静态图案）
+- 双层粒子渲染（光晕 + 核心）
+- 基于速度的加法亮度增强
+- 最小 alpha 约束：20（确保拖尾不会过度积累）
 
-### Particle Lifecycle
-1. **Spawn** - Random position or edge respawn
-2. **Update** - Apply forces, update position
-3. **Render** - Draw with velocity-based brightness
-4. **Decay** - Gradual life reduction
-5. **Reset** - Respawn when life ends or out of bounds
+### 粒子生命周期
+1. **生成** - 随机位置或边缘重生
+2. **更新** - 应用力，更新位置
+3. **渲染** - 使用基于速度的亮度绘制
+4. **衰减** - 逐渐生命减少
+5. **重置** - 生命结束或超出边界时重生
 
-## 🌐 Browser Compatibility
+## 🌐 浏览器兼容性
 
-Tested on modern browsers:
+在现代浏览器上测试通过：
 - ✅ Chrome/Edge 90+
 - ✅ Firefox 88+
 - ✅ Safari 14+
 - ✅ Opera 76+
 
-## 📝 License
+## 📝 许可证
 
-This project is open source and available under the MIT License.
+本项目是开源的，使用 MIT 许可证。
 
-## 🤝 Contributing
+## 🤝 贡献
 
-Feel free to fork this project and experiment with:
-- Different color palettes
-- Alternative noise functions
-- Additional particle behaviors
-- WebGL rendering for performance
+欢迎 fork 本项目并进行实验：
+- 不同的调色板
+- 替代噪声函数
+- 额外的粒子行为
+- WebGL 渲染以提升性能
 
-## 📸 Gallery Tips
+## 📸 截图技巧
 
-For best results when downloading images:
-1. Let the system run for 10-20 seconds to build up trails
-2. Use higher Trail Persistence (0.9-1.2) for long flowing trails
-3. Interact with cursor to create dynamic vortex patterns
-4. Click to create burst effects
-5. Use Reset to clear canvas before capturing new compositions
+下载图像时的最佳效果：
+1. 让系统运行 10-20 秒以积累拖尾
+2. 使用更高的拖尾持久度（0.9-1.2）获得长流动拖尾
+3. 与光标互动创建动态涡旋图案
+4. 点击创建爆发效果
+5. 使用重置在捕获新构图前清除画布
 
-## 🔗 Resources
+## 🔗 相关资源
 
-- [p5.js Documentation](https://p5js.org/reference/)
-- [Perlin Noise](https://en.wikipedia.org/wiki/Perlin_noise)
-- [Particle Systems](https://natureofcode.com/book/chapter-4-particle-systems/)
+- [p5.js 文档](https://p5js.org/reference/)
+- [柏林噪声](https://en.wikipedia.org/wiki/Perlin_noise)
+- [粒子系统](https://natureofcode.com/book/chapter-4-particle-systems/)
 
 ---
 
-**Created with p5.js** • Interactive Generative Art
+**使用 p5.js 创建** • 交互式生成艺术
 
-> "This is algorithmic art at its highest level: a system so carefully crafted that it appears spontaneous, so mathematically precise that it feels organic, so meticulously refined that every parameter carries the weight of countless hours of expert refinement."
+> "这是最高水平的算法艺术：一个精心制作的系统，看起来自发生动，数学精确却感觉有机，每个参数都经过无数小时专家级提炼的精细化。"
