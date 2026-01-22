@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luminous Resonance - Interactive Particle System</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Anthropic Brand Colors */
+        :root {
+            --anthropic-dark: #141413;
+            --anthropic-light: #faf9f5;
+            --anthropic-mid-gray: #b0aea5;
+            --anthropic-light-gray: #e8e6dc;
+            --anthropic-orange: #d97757;
+            --anthropic-blue: #6a9bcc;
+            --anthropic-green: #788c5d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--anthropic-light) 0%, #f5f3ee 100%);
+            min-height: 100vh;
+            color: var(--anthropic-dark);
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 320px;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(20, 20, 19, 0.1);
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .sidebar h1 {
+            font-family: 'Lora', serif;
+            font-size: 24px;
+            font-weight: 500;
+            color: var(--anthropic-dark);
+            margin-bottom: 8px;
+        }
+
+        .sidebar .subtitle {
+            color: var(--anthropic-mid-gray);
+            font-size: 14px;
+            margin-bottom: 32px;
+            line-height: 1.4;
+        }
+
+        /* Control Sections */
+        .control-section {
+            margin-bottom: 32px;
+        }
+
+        .control-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--anthropic-dark);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-section h3::before {
+            content: '•';
+            color: var(--anthropic-orange);
+            font-weight: bold;
+        }
+
+        /* Seed Controls */
+        .seed-input {
+            width: 100%;
+            background: var(--anthropic-light);
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin-bottom: 12px;
+            border: 1px solid var(--anthropic-light-gray);
+            text-align: center;
+        }
+
+        .seed-input:focus {
+            outline: none;
+            border-color: var(--anthropic-orange);
+            box-shadow: 0 0 0 2px rgba(217, 119, 87, 0.1);
+            background: white;
+        }
+
+        .seed-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .regen-button {
+            margin-bottom: 0;
+        }
+
+        /* Parameter Controls */
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--anthropic-dark);
+            margin-bottom: 8px;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .slider-container input[type="range"] {
+            flex: 1;
+            height: 4px;
+            background: var(--anthropic-light-gray);
+            border-radius: 2px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--anthropic-orange);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            background: #c86641;
+        }
+
+        .slider-container input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: var(--anthropic-orange);
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .value-display {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: var(--anthropic-mid-gray);
+            min-width: 60px;
+            text-align: right;
+        }
+
+        /* Color Pickers */
+        .color-group {
+            margin-bottom: 16px;
+        }
+
+        .color-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--anthropic-mid-gray);
+            margin-bottom: 4px;
+        }
+
+        .color-picker-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .color-picker-container input[type="color"] {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: none;
+            padding: 0;
+        }
+
+        .color-value {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: var(--anthropic-mid-gray);
+        }
+
+        /* Buttons */
+        .button {
+            background: var(--anthropic-orange);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .button:hover {
+            background: #c86641;
+            transform: translateY(-1px);
+        }
+
+        .button:active {
+            transform: translateY(0);
+        }
+
+        .button.secondary {
+            background: var(--anthropic-blue);
+        }
+
+        .button.secondary:hover {
+            background: #5a8bb8;
+        }
+
+        .button.tertiary {
+            background: var(--anthropic-green);
+        }
+
+        .button.tertiary:hover {
+            background: #6b7b52;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .button-row .button {
+            flex: 1;
+        }
+
+        /* Canvas Area */
+        .canvas-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 0;
+        }
+
+        #canvas-container {
+            width: 100%;
+            max-width: 1000px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(20, 20, 19, 0.1);
+            background: #000;
+        }
+
+        #canvas-container canvas {
+            display: block;
+            width: 100% !important;
+            height: auto !important;
+        }
+
+        /* Loading State */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: var(--anthropic-mid-gray);
+        }
+
+        /* Interactive hint */
+        .interaction-hint {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-size: 14px;
+            pointer-events: none;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Responsive - Stack on mobile */
+        @media (max-width: 600px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .canvas-area {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Control Sidebar -->
+        <div class="sidebar">
+            <h1>Luminous Resonance</h1>
+            <div class="subtitle">Interactive particle field responding to mouse movement with organic flow dynamics</div>
+
+            <!-- Seed Section -->
+            <div class="control-section">
+                <h3>Seed</h3>
+                <input type="number" id="seed-input" class="seed-input" value="12345" onchange="updateSeed()">
+                <div class="seed-controls">
+                    <button class="button secondary" onclick="previousSeed()">← Prev</button>
+                    <button class="button secondary" onclick="nextSeed()">Next →</button>
+                </div>
+                <button class="button tertiary regen-button" onclick="randomSeedAndUpdate()">↻ Random</button>
+            </div>
+
+            <!-- Parameters Section -->
+            <div class="control-section">
+                <h3>Parameters</h3>
+
+                <!-- Particle Count -->
+                <div class="control-group">
+                    <label>Particle Count</label>
+                    <div class="slider-container">
+                        <input type="range" id="particleCount" min="1000" max="20000" step="500" value="6500" oninput="updateParam('particleCount', this.value)">
+                        <span class="value-display" id="particleCount-value">6500</span>
+                    </div>
+                </div>
+
+                <!-- Flow Speed -->
+                <div class="control-group">
+                    <label>Flow Speed</label>
+                    <div class="slider-container">
+                        <input type="range" id="flowSpeed" min="0.1" max="3.0" step="0.1" value="1.5" oninput="updateParam('flowSpeed', this.value)">
+                        <span class="value-display" id="flowSpeed-value">1.5</span>
+                    </div>
+                </div>
+
+                <!-- Noise Scale -->
+                <div class="control-group">
+                    <label>Noise Scale</label>
+                    <div class="slider-container">
+                        <input type="range" id="noiseScale" min="0.001" max="0.02" step="0.001" value="0.001" oninput="updateParam('noiseScale', this.value)">
+                        <span class="value-display" id="noiseScale-value">0.001</span>
+                    </div>
+                </div>
+
+                <!-- Trail Persistence -->
+                <div class="control-group">
+                    <label>Trail Persistence</label>
+                    <div class="slider-container">
+                        <input type="range" id="trailPersistence" min="0.5" max="2.0" step="0.05" value="0.9" oninput="updateParam('trailPersistence', this.value)">
+                        <span class="value-display" id="trailPersistence-value">0.9</span>
+                    </div>
+                </div>
+
+                <!-- Attraction Force -->
+                <div class="control-group">
+                    <label>Vortex Strength</label>
+                    <div class="slider-container">
+                        <input type="range" id="attractionForce" min="0" max="3.0" step="0.1" value="0.3" oninput="updateParam('attractionForce', this.value)">
+                        <span class="value-display" id="attractionForce-value">0.3</span>
+                    </div>
+                </div>
+
+                <!-- Attraction Range -->
+                <div class="control-group">
+                    <label>Vortex Range</label>
+                    <div class="slider-container">
+                        <input type="range" id="attractionRange" min="50" max="800" step="10" value="600" oninput="updateParam('attractionRange', this.value)">
+                        <span class="value-display" id="attractionRange-value">600</span>
+                    </div>
+                </div>
+
+                <!-- Repulsion on Click -->
+                <div class="control-group">
+                    <label>Click Repulsion</label>
+                    <div class="slider-container">
+                        <input type="range" id="repulsionForce" min="0" max="10" step="0.5" value="5" oninput="updateParam('repulsionForce', this.value)">
+                        <span class="value-display" id="repulsionForce-value">5</span>
+                    </div>
+                </div>
+
+                <!-- Particle Size -->
+                <div class="control-group">
+                    <label>Particle Size</label>
+                    <div class="slider-container">
+                        <input type="range" id="particleSize" min="0.5" max="3.0" step="0.1" value="2.5" oninput="updateParam('particleSize', this.value)">
+                        <span class="value-display" id="particleSize-value">2.5</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image Upload Section -->
+            <div class="control-section">
+                <h3>Image Color Mapping</h3>
+
+                <div class="control-group">
+                    <label>Upload Image</label>
+                    <input type="file" id="imageUpload" accept="image/*" style="width: 100%; padding: 8px; border: 1px solid #e8e6dc; border-radius: 6px; font-size: 12px;" onchange="handleImageUpload(event)">
+                </div>
+
+                <div class="control-group">
+                    <label>Use Image Colors</label>
+                    <div class="slider-container">
+                        <input type="checkbox" id="useImageColors" onchange="toggleImageColors(this.checked)" style="width: 20px; height: 20px;">
+                        <span style="margin-left: 8px; font-size: 12px; color: var(--anthropic-mid-gray);">Enable color mapping from image</span>
+                    </div>
+                </div>
+
+                <div id="image-info" style="font-size: 11px; color: var(--anthropic-mid-gray); margin-top: 8px; display: none;">
+                    Image loaded: <span id="image-name">-</span>
+                </div>
+            </div>
+
+            <!-- Colors Section -->
+            <div class="control-section">
+                <h3>Colors</h3>
+
+                <!-- Color 1 - Cyan -->
+                <div class="color-group">
+                    <label>Core Cyan</label>
+                    <div class="color-picker-container">
+                        <input type="color" id="color1" value="#00ffff" onchange="updateColor('color1', this.value)">
+                        <span class="color-value" id="color1-value">#00ffff</span>
+                    </div>
+                </div>
+
+                <!-- Color 2 - Teal -->
+                <div class="color-group">
+                    <label>Deep Teal</label>
+                    <div class="color-picker-container">
+                        <input type="color" id="color2" value="#00ced1" onchange="updateColor('color2', this.value)">
+                        <span class="color-value" id="color2-value">#00ced1</span>
+                    </div>
+                </div>
+
+                <!-- Color 3 - Aqua -->
+                <div class="color-group">
+                    <label>Bright Aqua</label>
+                    <div class="color-picker-container">
+                        <input type="color" id="color3" value="#7fffd4" onchange="updateColor('color3', this.value)">
+                        <span class="color-value" id="color3-value">#7fffd4</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions Section -->
+            <div class="control-section">
+                <h3>Actions</h3>
+                <div class="button-row">
+                    <button class="button" onclick="resetParameters()">Reset</button>
+                    <button class="button secondary" onclick="downloadArt()">Download PNG</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Canvas Area -->
+        <div class="canvas-area">
+            <div id="canvas-container">
+                <div class="loading">Initializing luminous particle field...</div>
+            </div>
+            <div class="interaction-hint">Move cursor to create vortex • Click to burst</div>
+        </div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════════════
+        // LUMINOUS RESONANCE - GENERATIVE ART PARAMETERS
+        // ═══════════════════════════════════════════════════════════════════════
+
+        let params = {
+            seed: 12345,
+            particleCount: 6500,
+            flowSpeed: 1.5,
+            noiseScale: 0.001,
+            trailPersistence: 0.9,
+            attractionForce: 0.3,
+            attractionRange: 600,
+            repulsionForce: 5,
+            particleSize: 2.5,
+            colorPalette: ['#00ffff', '#00ced1', '#7fffd4']
+        };
+
+        let defaultParams = {...params};
+
+        // Image color mapping variables
+        let uploadedImage = null;
+        let useImageColors = false;
+        let imageColors = null;
+
+        // ═══════════════════════════════════════════════════════════════════════
+        // P5.JS PARTICLE SYSTEM - LUMINOUS RESONANCE
+        // ═══════════════════════════════════════════════════════════════════════
+
+        let particles = [];
+        let canvasScaleX = 1;
+        let canvasScaleY = 1;
+        let hueShift = 0;
+        let timeOffset = 0;
+
+        function setup() {
+            let canvas = createCanvas(1920, 1080);
+            canvas.parent('canvas-container');
+
+            // Set dark background for luminous effect
+            background(5, 5, 10);
+
+            initializeParticles();
+
+            // Remove loading message
+            const loading = document.querySelector('.loading');
+            if (loading) loading.style.display = 'none';
+
+            // Hide interaction hint after 5 seconds
+            setTimeout(() => {
+                const hint = document.querySelector('.interaction-hint');
+                if (hint) hint.style.opacity = '0';
+            }, 5000);
+
+            // Track canvas scaling for accurate mouse coordinates
+            // Delay slightly to ensure canvas is fully rendered
+            setTimeout(updateCanvasScale, 50);
+            setTimeout(updateCanvasScale, 100);
+            setTimeout(updateCanvasScale, 500);
+            window.addEventListener('resize', updateCanvasScale);
+            window.addEventListener('scroll', updateCanvasScale);
+        }
+
+        function updateCanvasScale() {
+            let canvasElement = document.querySelector('#canvas-container canvas');
+            if (canvasElement) {
+                let rect = canvasElement.getBoundingClientRect();
+                canvasScaleX = width / rect.width;
+                canvasScaleY = height / rect.height;
+            }
+        }
+
+        function getMousePos() {
+            // Get accurate mouse position using getBoundingClientRect
+            let canvasElement = document.querySelector('#canvas-container canvas');
+            if (!canvasElement) {
+                return { x: mouseX, y: mouseY };
+            }
+
+            let rect = canvasElement.getBoundingClientRect();
+
+            // Calculate scale factors
+            let scaleX = width / rect.width;
+            let scaleY = height / rect.height;
+
+            // Get mouse position relative to canvas element
+            let relativeX = (mouseX) * scaleX;
+            let relativeY = (mouseY) * scaleY;
+
+            return {
+                x: relativeX,
+                y: relativeY
+            };
+        }
+
+        function mousePressed() {
+            // Apply repulsion force on click - increased range for larger canvas
+            let mousePos = getMousePos();
+            let repulsionRange = 500; // Larger range for 1920x1080 canvas
+
+            for (let particle of particles) {
+                let dx = particle.x - mousePos.x;
+                let dy = particle.y - mousePos.y;
+                let dist = sqrt(dx * dx + dy * dy);
+
+                if (dist < repulsionRange && dist > 0) {
+                    // Strong repulsion force
+                    let forceMagnitude = (params.repulsionForce * 800) / (dist * dist + 10);
+                    forceMagnitude = constrain(forceMagnitude, 0, 20);
+
+                    particle.vx += (dx / dist) * forceMagnitude;
+                    particle.vy += (dy / dist) * forceMagnitude;
+                }
+            }
+        }
+
+        function initializeParticles() {
+            // Seed the randomness for reproducibility
+            randomSeed(params.seed);
+            noiseSeed(params.seed);
+
+            // Clear and recreate particles
+            particles = [];
+
+            for (let i = 0; i < params.particleCount; i++) {
+                particles.push(new LuminousParticle());
+            }
+        }
+
+        function draw() {
+            // Periodically update canvas scale (every 60 frames ≈ 1 second)
+            if (frameCount % 60 === 0) {
+                updateCanvasScale();
+            }
+
+            // Create trail effect with controlled persistence
+            noStroke();
+            // Higher minimum alpha ensures trails don't form static patterns
+            // Alpha is inversely proportional to trailPersistence
+            let alpha = constrain((1 - params.trailPersistence) * 255, 20, 255);
+            fill(5, 5, 10, alpha);
+            rect(0, 0, width, height);
+
+            // Update time offset for noise animation
+            timeOffset += 0.003 * params.flowSpeed;
+
+            // Update hue shift for color variation
+            hueShift += 0.2;
+
+            // Update and display all particles
+            for (let particle of particles) {
+                particle.update();
+                particle.display();
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════
+        // LUMINOUS PARTICLE CLASS
+        // ═══════════════════════════════════════════════════════════════════════
+
+        class LuminousParticle {
+            constructor() {
+                this.reset();
+                // Random starting position
+                this.x = random(width);
+                this.y = random(height);
+            }
+
+            reset() {
+                // Respawn at edges
+                const edge = floor(random(4));
+                switch(edge) {
+                    case 0: // Top
+                        this.x = random(width);
+                        this.y = -10;
+                        break;
+                    case 1: // Right
+                        this.x = width + 10;
+                        this.y = random(height);
+                        break;
+                    case 2: // Bottom
+                        this.x = random(width);
+                        this.y = height + 10;
+                        break;
+                    case 3: // Left
+                        this.x = -10;
+                        this.y = random(height);
+                        break;
+                }
+
+                // Initialize velocity with random direction
+                this.vx = random(-1, 1);
+                this.vy = random(-1, 1);
+
+                // Particle properties
+                this.maxSpeed = random(2.5, 5.0); // Increased for faster response
+                this.baseSize = random(0.8, 1.5);
+                this.life = random(0.5, 1);
+                this.colorIndex = floor(random(params.colorPalette.length));
+                this.brightness = random(180, 255);
+            }
+
+            update() {
+                // Get noise-based flow direction
+                let noiseAngle = noise(
+                    this.x * params.noiseScale,
+                    this.y * params.noiseScale,
+                    timeOffset
+                ) * TWO_PI * 2;
+
+                // Base flow force
+                let flowForce = p5.Vector.fromAngle(noiseAngle);
+                flowForce.mult(0.3);
+
+                // Apply flow force to velocity
+                this.vx += flowForce.x * 0.1 * params.flowSpeed;
+                this.vy += flowForce.y * 0.1 * params.flowSpeed;
+
+                // Cursor vortex effect
+                let mousePos = getMousePos();
+                let dx = mousePos.x - this.x;
+                let dy = mousePos.y - this.y;
+                let distToMouse = sqrt(dx * dx + dy * dy);
+
+                if (distToMouse < params.attractionRange && distToMouse > 0) {
+                    // Calculate normalized distance and angle
+                    let normalizedDist = distToMouse / params.attractionRange;
+                    let angleToMouse = atan2(dy, dx);
+
+                    // Radial force (attraction toward center) - stronger when closer
+                    let radialForce = params.attractionForce * (1 - normalizedDist) * 2.5;
+                    radialForce = constrain(radialForce, 0, 6);
+
+                    // Tangential force (rotation) - creates vortex effect
+                    // Tangent direction is perpendicular to radial direction
+                    let tangentForce = params.attractionForce * (1 - normalizedDist) * 3;
+                    tangentForce = constrain(tangentForce, 0, 8);
+
+                    // Apply radial force (attraction to center)
+                    this.vx += cos(angleToMouse) * radialForce;
+                    this.vy += sin(angleToMouse) * radialForce;
+
+                    // Apply tangential force (rotation around center)
+                    // Rotate 90 degrees counter-clockwise: -sin, cos
+                    this.vx += -sin(angleToMouse) * tangentForce;
+                    this.vy += cos(angleToMouse) * tangentForce;
+
+                    // Increase brightness when near cursor
+                    this.brightness = min(255, this.brightness + 4);
+                } else {
+                    // Gradually return to base brightness
+                    this.brightness = lerp(this.brightness, random(180, 220), 0.01);
+                }
+
+                // Limit velocity - allow higher speeds in vortex
+                let speed = sqrt(this.vx * this.vx + this.vy * this.vy);
+                let effectiveMaxSpeed = this.maxSpeed * 1.5; // Increase max speed for vortex
+                if (speed > effectiveMaxSpeed) {
+                    this.vx = (this.vx / speed) * effectiveMaxSpeed;
+                    this.vy = (this.vy / speed) * effectiveMaxSpeed;
+                }
+
+                // Update position
+                this.x += this.vx * params.flowSpeed;
+                this.y += this.vy * params.flowSpeed;
+
+                // Wrap around edges or respawn
+                if (this.x < -50 || this.x > width + 50 ||
+                    this.y < -50 || this.y > height + 50) {
+                    this.reset();
+                }
+
+                // Reduced velocity decay for faster, more responsive movement
+                this.vx *= 0.995;
+                this.vy *= 0.995;
+
+                // Update life cycle
+                this.life -= 0.0005;
+                if (this.life <= 0) {
+                    this.reset();
+                }
+            }
+
+            display() {
+                // Calculate color based on velocity and palette or image
+                let speed = sqrt(this.vx * this.vx + this.vy * this.vy);
+                let baseColor;
+
+                // Use image color if available and enabled
+                if (useImageColors && imageColors) {
+                    let imgX = floor(map(this.x, 0, width, 0, uploadedImage.width));
+                    let imgY = floor(map(this.y, 0, height, 0, uploadedImage.height));
+                    imgX = constrain(imgX, 0, uploadedImage.width - 1);
+                    imgY = constrain(imgY, 0, uploadedImage.height - 1);
+                    let pixelIndex = (imgY * uploadedImage.width + imgX) * 4;
+                    baseColor = color(
+                        imageColors[pixelIndex],
+                        imageColors[pixelIndex + 1],
+                        imageColors[pixelIndex + 2]
+                    );
+                } else {
+                    let colorHex = params.colorPalette[this.colorIndex];
+                    baseColor = color(colorHex);
+                }
+
+                // Modify color based on velocity (faster = brighter)
+                let brightnessBoost = map(speed, 0, this.maxSpeed, 0, 100);
+                let alpha = map(this.life, 0, 1, 100, 255);
+
+                // Extract RGB and boost brightness
+                let r = red(baseColor);
+                let g = green(baseColor);
+                let b = blue(baseColor);
+
+                // Apply velocity-based brightness boost
+                r = min(255, r + brightnessBoost * 0.5);
+                g = min(255, g + brightnessBoost * 0.3);
+                b = min(255, b + brightnessBoost * 0.7);
+
+                // Draw particle with glow
+                noStroke();
+
+                // Outer glow
+                let glowSize = this.baseSize * params.particleSize * 3;
+                let glowAlpha = alpha * 0.15;
+                fill(r, g, b, glowAlpha);
+                ellipse(this.x, this.y, glowSize, glowSize);
+
+                // Inner core
+                let coreSize = this.baseSize * params.particleSize;
+                let coreAlpha = alpha * 0.8;
+                fill(r, g, b, coreAlpha);
+                ellipse(this.x, this.y, coreSize, coreSize);
+
+                // Bright center for luminous effect
+                if (speed > 1.5) {
+                    fill(255, 255, 255, alpha * 0.9);
+                    ellipse(this.x, this.y, coreSize * 0.5, coreSize * 0.5);
+                }
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════
+        // UI CONTROL HANDLERS
+        // ═══════════════════════════════════════════════════════════════════════
+
+        function updateParam(paramName, value) {
+            let numValue = parseFloat(value);
+            params[paramName] = numValue;
+            document.getElementById(paramName + '-value').textContent = value;
+
+            // Reinitialize particles if count changed
+            if (paramName === 'particleCount') {
+                initializeParticles();
+            }
+        }
+
+        function updateColor(colorId, value) {
+            let index = parseInt(colorId.replace('color', '')) - 1;
+            params.colorPalette[index] = value;
+            document.getElementById(colorId + '-value').textContent = value;
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════
+        // SEED CONTROL FUNCTIONS
+        // ═══════════════════════════════════════════════════════════════════════
+
+        function updateSeedDisplay() {
+            document.getElementById('seed-input').value = params.seed;
+        }
+
+        function updateSeed() {
+            let input = document.getElementById('seed-input');
+            let newSeed = parseInt(input.value);
+            if (newSeed && newSeed > 0) {
+                params.seed = newSeed;
+                initializeParticles();
+                background(5, 5, 10);
+            } else {
+                updateSeedDisplay();
+            }
+        }
+
+        function previousSeed() {
+            params.seed = Math.max(1, params.seed - 1);
+            updateSeedDisplay();
+            initializeParticles();
+            background(5, 5, 10);
+        }
+
+        function nextSeed() {
+            params.seed = params.seed + 1;
+            updateSeedDisplay();
+            initializeParticles();
+            background(5, 5, 10);
+        }
+
+        function randomSeedAndUpdate() {
+            params.seed = Math.floor(Math.random() * 999999) + 1;
+            updateSeedDisplay();
+            initializeParticles();
+            background(5, 5, 10);
+        }
+
+        function resetParameters() {
+            params = {...defaultParams};
+
+            // Update all parameter UI elements
+            const paramIds = ['particleCount', 'flowSpeed', 'noiseScale',
+                            'trailPersistence', 'attractionForce', 'attractionRange',
+                            'repulsionForce', 'particleSize'];
+
+            for (let id of paramIds) {
+                document.getElementById(id).value = params[id];
+                document.getElementById(id + '-value').textContent = params[id];
+            }
+
+            // Reset colors
+            for (let i = 0; i < params.colorPalette.length; i++) {
+                let colorId = 'color' + (i + 1);
+                document.getElementById(colorId).value = params.colorPalette[i];
+                document.getElementById(colorId + '-value').textContent = params.colorPalette[i];
+            }
+
+            // Reset image color toggle
+            useImageColors = false;
+            document.getElementById('useImageColors').checked = false;
+
+            updateSeedDisplay();
+            initializeParticles();
+            background(5, 5, 10);
+        }
+
+        function downloadArt() {
+            saveCanvas('luminous-resonance-seed-' + params.seed, 'png');
+        }
+
+        // ═══════════════════════════════════════════════════════════════════════
+        // IMAGE UPLOAD AND COLOR MAPPING
+        // ═══════════════════════════════════════════════════════════════════════
+
+        function handleImageUpload(event) {
+            let file = event.target.files[0];
+            if (!file) return;
+
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                let img = new Image();
+                img.onload = function() {
+                    uploadedImage = img;
+                    extractImageColors();
+
+                    // Show image info
+                    document.getElementById('image-info').style.display = 'block';
+                    document.getElementById('image-name').textContent = file.name;
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function extractImageColors() {
+            if (!uploadedImage) return;
+
+            // Create a temporary canvas to extract pixel data
+            let tempCanvas = document.createElement('canvas');
+            let tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = uploadedImage.width;
+            tempCanvas.height = uploadedImage.height;
+            tempCtx.drawImage(uploadedImage, 0, 0);
+
+            // Get pixel data
+            let imageData = tempCtx.getImageData(0, 0, uploadedImage.width, uploadedImage.height);
+            imageColors = imageData.data;
+        }
+
+        function toggleImageColors(checked) {
+            useImageColors = checked;
+        }
+
+        // Initialize UI on load
+        window.addEventListener('load', function() {
+            updateSeedDisplay();
+        });
+    </script>
+</body>
+</html>
