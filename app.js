@@ -144,8 +144,14 @@ void main() {
 
     vec2 center = position - 0.5;
     float centerDistance = dot(center, center);
-    velocity += vec2(-center.y, center.x) * (0.08 + variance * 0.05) * u_delta;
+    velocity += vec2(-center.y, center.x) * (0.16 + variance * 0.1) * u_delta;
     velocity += -center * centerDistance * 0.18 * u_delta;
+
+    float speed = length(velocity);
+    if (speed < 0.045) {
+        vec2 ambientDrift = flowField(position * 2.1 + variance * 3.7, u_time * 1.35 + u_seed);
+        velocity += ambientDrift * (0.32 + variance * 0.18) * u_delta;
+    }
 
     velocity *= pow(u_damping, 60.0 * u_delta);
     position += velocity * u_delta;
@@ -156,7 +162,8 @@ void main() {
     if (respawn) {
         vec2 rnd = hash2(v_uv * 451.0 + u_time + u_seed);
         position = 0.18 + rnd * 0.64;
-        velocity = (hash2(v_uv * 902.0 + u_seed) - 0.5) * 0.04;
+        vec2 respawnDirection = normalize(hash2(v_uv * 902.0 + u_seed) - 0.5 + vec2(0.001));
+        velocity = respawnDirection * (0.035 + rnd.y * 0.05);
         life = 0.6 + rnd.x * 1.5;
         variance = rnd.y;
     }
@@ -344,8 +351,10 @@ function buildSimulationTextures(gl, resolution, seed) {
         const variance = random();
         const x = 0.5 + Math.cos(angle) * radius;
         const y = 0.5 + Math.sin(angle) * radius;
-        const vx = (random() - 0.5) * 0.02;
-        const vy = (random() - 0.5) * 0.02;
+        const tangentX = -Math.sin(angle);
+        const tangentY = Math.cos(angle);
+        const vx = tangentX * (0.045 + variance * 0.035) + (random() - 0.5) * 0.02;
+        const vy = tangentY * (0.045 + variance * 0.035) + (random() - 0.5) * 0.02;
         const life = 0.6 + random() * 1.4;
 
         positionDataA[idx] = x;
